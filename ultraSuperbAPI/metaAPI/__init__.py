@@ -4,6 +4,9 @@ import json
 import hashlib, binascii
 import time
 from ultraSuperbAPI.helpers import buildResponseDictionary, validJSON
+from ultraSuperbAPI.api import db
+
+from ultraSuperbAPI.models import auth_models
 
 meta_api = Blueprint('meta', __name__, template_folder='templates')
 
@@ -87,11 +90,26 @@ def admin_register():
         api_key_hex = binascii.hexlify(api_key_hash)
         api_key_string = api_key_hex.decode('utf-8')
 
-        #Build data dictionary
-        data = {
-            "name": name,
-            "key": api_key_string
-        }
+        #Need to check if the key name already exists.
+        check_key_name = auth_models.APIKey.query.filter_by(key_name=name).first()
+
+        print(check_key_name)
+        if check_key_name:
+            error = {"desc": "API key already exists with that name."}
+            responseCode = 500
+        else:
+            #Set the API key in the API Key object
+            APIKey = auth_models.APIKey(key_name=name, key_value=api_key_string)
+            #Add the key.
+            db.session.add(APIKey)
+            #Commit the changes. Win.
+            db.session.commit()
+
+            #Build data dictionary
+            data = {
+                "name": name,
+                "key": api_key_string
+            }
 
     #Send back to user.
     return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
