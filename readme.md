@@ -9,12 +9,12 @@ At the moment it's still early days, and doesn't really do much.
 Requirements
 ============
 
-Python 3.5+
-Virtualenv
-Pip
+* Python 3.5+
+* Virtualenv
+* Pip
 
+To run:
 
+Run create_db.py if you haven't already (builds the DB)
 
-
-
-
+Run start.py to kick things off

@@ -1,0 +1,51 @@
+{
+	"variables": [],
+	"info": {
+		"name": "superb api",
+		"_postman_id": "9710751b-dd29-5dd5-cc5e-9e346a919bd4",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register a new API token for a user.",
+			"request": {
+				"url": "localhost:5000/meta/v1/admin-register",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n    \"name\": \"test\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Meta API List",
+			"request": {
+				"url": "localhost:5000/meta/v1/admin-register",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n    \"name\": \"test\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
