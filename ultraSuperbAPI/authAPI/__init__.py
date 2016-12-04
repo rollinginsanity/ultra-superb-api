@@ -56,31 +56,42 @@ def oauthAuth():
     responseCode = "200"
     requestJSON = ""
 
+    #Get data from GET query params.
     if request.method == "GET":
         username = request.args.get("username")
         password = request.args.get("password")
         client_id = request.args.get("client_id")
+        ##If any data is missing error out.
+        if not username or not password or not client_id:
+            error = {"description": "Missing parameter, make sure username, password and client_id are all set.", "code": "1"}
 
-        data = {
-            "username": username,
-            "client_id": client_id,
-            "access_token": auth_helpers.tokenGenerator(32),
-            "refresh_token": auth_helpers.tokenGenerator(64)
-        }
-
+    #Get data from POST body.
     elif request.method == "POST":
         requestJSON = request.json
-        username = requestJSON["username"]
-        password = requestJSON["password"]
-        client_id = requestJSON["client_id"]
+        ##If any data is missing error out.
+        if not "username" in requestJSON or not "password" in requestJSON or not "client_id" in requestJSON:
+            error = {"description": "Missing parameter, make sure username, password and client_id are all set.", "code": "1"} #Code 1, invalid auth request.
+        else:
+            username = requestJSON["username"]
+            password = requestJSON["password"]
+            client_id = requestJSON["client_id"]
 
+
+    #validate credentials
+    auth_state = auth_helpers.validateCredentials(username, password, client_id)
+    if not auth_state["authenticated"]:
+        error = {"description": auth_state["error"], "code": "2"} #Code 2, auth failed, invalid credentials.
+
+    #If there has been an error, don't set data, and return a 500.
+    if "code" in error:
+        data = {}
+        responseCode = "500"
+    else:
         data = {
             "username": username,
             "client_id": client_id,
             "access_token": auth_helpers.tokenGenerator(32),
             "refresh_token": auth_helpers.tokenGenerator(64)
         }
-    else:
-        return "EFF YOU!"
 
     return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
