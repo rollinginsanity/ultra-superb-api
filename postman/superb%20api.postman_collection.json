@@ -9,6 +9,15 @@
 	"item": [
 		{
 			"name": "Register a new API token for a user.",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var jsonData = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"api_key\", jsonData.data[\"key\"]);\n\n\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\n"
+					}
+				}
+			],
 			"request": {
 				"url": "localhost:5000/meta/v1/admin-register",
 				"method": "POST",
@@ -21,7 +30,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{  \n    \"name\": \"test\"\n}\n"
+					"raw": "{  \n    \"name\": \"test1642\"\n}\n"
 				},
 				"description": ""
 			},
@@ -70,12 +79,32 @@
 		{
 			"name": "oAuth Authenticate (GET)",
 			"request": {
-				"url": "localhost:5000/auth/v1/auth/oauth/",
+				"url": "localhost:5000/auth/v1/auth/oauth/?username=bob&password=bob&client_id={{api_key}}",
 				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "formdata",
 					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "oAuth Authenticate (POST)",
+			"request": {
+				"url": "localhost:5000/auth/v1/auth/oauth/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"client_id\": \"{{api_key}}\",\n    \"username\": \"bob\",\n    \"password\": \"bob\"\n}"
 				},
 				"description": ""
 			},
