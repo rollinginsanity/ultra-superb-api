@@ -87,11 +87,18 @@ def oauthAuth():
         data = {}
         responseCode = "500"
     else:
+
+        access_token = auth_models.oAuthAccessToken(token_value=auth_helpers.tokenGenerator(32))
+        refresh_token = auth_models.oAuthRefreshToken(token_value=auth_helpers.tokenGenerator(64))
+        db.session.add(access_token)
+        db.session.add(refresh_token)
+        db.session.commit()
+
         data = {
             "username": username,
             "client_id": client_id,
-            "access_token": auth_helpers.tokenGenerator(32),
-            "refresh_token": auth_helpers.tokenGenerator(64)
+            "access_token": access_token.token_value,
+            "refresh_token": refresh_token.token_value
         }
 
     return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}

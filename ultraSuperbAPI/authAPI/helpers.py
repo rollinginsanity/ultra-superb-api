@@ -14,7 +14,12 @@ def tokenGenerator(length):
 
 def validateCredentials(username, password, client_id):
     if validateClientID(client_id):
-        return {"authenticated": True}
+        auth_attempt = validatePassword(username, password)
+        print(auth_attempt)
+        if auth_attempt["valid"]:
+            return {"authenticated": True}
+        else:
+            return {"authenticated": False, "error": auth_attempt["reason"]} #See below why this is baaaaad.
     else:
         return {"authenticated": False, "error": "missing or invalid client ID."} #Hint, this is bad, because it will help enumeration.
 
@@ -28,6 +33,17 @@ def validateClientID(client_id):
         return True
     else:
         return False
+
+#Validate the user's password (and implicitly, the user at the same time.)
+def validatePassword(username, password_clear):
+    user = auth_models.User.query.filter_by(username=username).first()
+    if user:
+        if user.password == hashPassword(password_clear):     #Bad, should hash before getting user info, only hasing on valid values leads to enumeration.
+            return {"valid": True}
+        else:
+            return {"valid": False, "reason": "Incorrect password for user."} #Nononononono, never do this.
+    else:
+        return {"valid": False, "reason": "User does not exist."} #Also bad.
 
 def hashPassword(password_clear):
     password_hash_bytes = hashlib.pbkdf2_hmac('sha512', password_clear.encode(), b'This is a salt', 100000)
