@@ -1,3 +1,7 @@
+#db migrations, they contain sensitive data.
+
+ultraSuperbAPI/db_migrations
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
