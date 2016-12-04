@@ -30,8 +30,8 @@
 		{
 			"name": "Meta API List",
 			"request": {
-				"url": "localhost:5000/meta/v1/admin-register",
-				"method": "POST",
+				"url": "localhost:5000/meta/v1/",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -42,6 +42,40 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{  \n    \"name\": \"test\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Auth API List",
+			"request": {
+				"url": "localhost:5000/auth/v1/",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n    \"name\": \"test\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "oAuth Authenticate (GET)",
+			"request": {
+				"url": "localhost:5000/auth/v1/auth/oauth/",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
 				},
 				"description": ""
 			},
