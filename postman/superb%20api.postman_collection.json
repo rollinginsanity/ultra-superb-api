@@ -8,107 +8,265 @@
 	},
 	"item": [
 		{
-			"name": "Register a new API token for a user.",
-			"event": [
+			"name": "Auth API",
+			"description": "",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": "var jsonData = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"api_key\", jsonData.data[\"key\"]);\n\n\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\n"
-					}
+					"name": "Auth API List",
+					"request": {
+						"url": "localhost:5000/auth/v1/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n    \"name\": \"test\"\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "oAuth Authenticate (GET)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"access_token\", jsonData.data[\"access_token\"]);\n\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "localhost:5000/auth/v1/auth/oauth/?username=test&password=test&client_id={{api_key}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "oAuth Authenticate (POST)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"access_token\", jsonData.data[\"access_token\"]);\n\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
+					"request": {
+						"url": "localhost:5000/auth/v1/auth/oauth/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"client_id\": \"{{api_key}}\",\n    \"username\": \"test\",\n    \"password\": \"test\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
 				}
-			],
-			"request": {
-				"url": "localhost:5000/meta/v1/admin-register",
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{  \n    \"name\": \"test1642\"\n}\n"
-				},
-				"description": ""
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Meta API List",
-			"request": {
-				"url": "localhost:5000/meta/v1/",
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
+			"name": "Crappy Bank API",
+			"description": "",
+			"item": [
+				{
+					"name": "Crappybank Index",
+					"request": {
+						"url": "localhost:5000/crappybank/v1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
 						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{  \n    \"name\": \"test\"\n}\n"
+					},
+					"response": []
 				},
-				"description": ""
-			},
-			"response": []
+				{
+					"name": "Crappybank Authentication Check",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/auth-check",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Auth API List",
-			"request": {
-				"url": "localhost:5000/auth/v1/",
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
+			"name": "Meta API",
+			"description": "",
+			"item": [
+				{
+					"name": "Register a new API token for a user.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"api_key\", jsonData.data[\"key\"]);\n\n\ntests[\"Status code is 200\"] = responseCode.code === 200;\n\n"
+							}
+						}
+					],
+					"request": {
+						"url": "localhost:5000/meta/v1/admin-register",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n    \"name\": \"test1642\"\n}\n"
+						},
 						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{  \n    \"name\": \"test\"\n}\n"
+					},
+					"response": []
 				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "oAuth Authenticate (GET)",
-			"request": {
-				"url": "localhost:5000/auth/v1/auth/oauth/?username=bob&password=bob&client_id={{api_key}}",
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "oAuth Authenticate (POST)",
-			"request": {
-				"url": "localhost:5000/auth/v1/auth/oauth/",
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
+				{
+					"name": "Meta API List",
+					"request": {
+						"url": "localhost:5000/meta/v1/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n    \"name\": \"test\"\n}\n"
+						},
 						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"client_id\": \"{{api_key}}\",\n    \"username\": \"bob\",\n    \"password\": \"bob\"\n}"
+					},
+					"response": []
 				},
-				"description": ""
-			},
-			"response": []
+				{
+					"name": "Meta API List copy",
+					"request": {
+						"url": "localhost:5000/meta/v1/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n    \"name\": \"test\"\n}\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a user (ID) (Get)",
+					"request": {
+						"url": "localhost:5000/meta/v1/user/1",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get a user (ID) (POST)",
+					"request": {
+						"url": "localhost:5000/meta/v1/user/0",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new user",
+					"request": {
+						"url": "localhost:5000/meta/v1/user/create",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test\",\n    \"password\": \"test\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users.",
+					"request": {
+						"url": "localhost:5000/meta/v1/users",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

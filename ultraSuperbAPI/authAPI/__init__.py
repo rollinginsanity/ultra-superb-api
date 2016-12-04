@@ -88,8 +88,8 @@ def oauthAuth():
         responseCode = "500"
     else:
 
-        access_token = auth_models.oAuthAccessToken(token_value=auth_helpers.tokenGenerator(32))
-        refresh_token = auth_models.oAuthRefreshToken(token_value=auth_helpers.tokenGenerator(64))
+        access_token = auth_models.oAuthAccessToken(token_value=auth_helpers.tokenGenerator(32), user_id=auth_state["user_id"])
+        refresh_token = auth_models.oAuthRefreshToken(token_value=auth_helpers.tokenGenerator(64), user_id=auth_state["user_id"])
         db.session.add(access_token)
         db.session.add(refresh_token)
         db.session.commit()
