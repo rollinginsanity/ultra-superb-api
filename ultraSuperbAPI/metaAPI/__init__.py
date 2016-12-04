@@ -5,8 +5,8 @@ import hashlib, binascii
 import time
 from ultraSuperbAPI.helpers import buildResponseDictionary, validJSON
 from ultraSuperbAPI.api import db
-
 from ultraSuperbAPI.models import auth_models
+from ultraSuperbAPI.authAPI import helpers as auth_helpers
 
 meta_api = Blueprint('meta', __name__, template_folder='templates')
 
@@ -23,6 +23,16 @@ def index():
             'URL': url_for('meta.admin_register'),
             "methods": ["POST"],
             "description": "Create a new admin user, and get an API key back."
+        },
+        {
+            'URL': url_for('meta.users', userid="0"),
+            "methods": ["GET", "POST"],
+            "description": "View users by ID."
+        },
+        {
+            'URL': url_for('meta.all_users'),
+            "methods": ["GET"],
+            "description": "View all users"
         }
     ]
 
@@ -112,4 +122,91 @@ def admin_register():
             }
 
     #Send back to user.
+    return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+
+#Gets the user at a specific user ID.
+@meta_api.route("/user/<int:userid>", methods=["GET", "POST"])
+def users(userid):
+    data = {}
+    error = {}
+    responseCode = 200
+    if request.method == "GET":
+        user = auth_models.User.query.filter_by(id=userid).first()
+        if user:
+            data = {
+                "user_id": user.id,
+                "username": user.username
+            }
+        else:
+            error = {"description": "No user exists with that ID."}
+
+    if request.method == "POST":
+        user = auth_models.User.query.filter_by(id=userid).first()
+        if user:
+            data = {
+                "user_id": user.id,
+                "username": user.username
+            }
+        else:
+            error = {"description": "No user exists with that ID."}
+
+    return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+
+#Create a new user for the other APIs.
+@meta_api.route("/user/create", methods=["POST"])
+def create_user():
+    data = {}
+    error = {}
+    responseCode = 200
+
+    if validJSON(request.data.decode('UTF-8')):
+        requestJSON = request.json
+        if "username" in requestJSON and "password" in requestJSON:
+            username = requestJSON["username"]
+            password = requestJSON["password"]
+
+            if not auth_models.User.query.filter_by(username=username).first():
+
+                password_hash = auth_helpers.hashPassword(password)
+
+                user = auth_models.User(username=username, password=password_hash)
+
+                db.session.add(user)
+
+                db.session.commit()
+
+                user = auth_models.User.query.filter_by(username=username).first()
+
+                data = {
+                    "username": user.username,
+                    "user_id": user.id
+                }
+            else:
+                error = {"description": "Duplicate username detected."}
+                responseCode = 400
+        else:
+            error = {"description": "Missing username or password in JSON body."}
+            responseCode = 400
+
+    else:
+        error = {"description": "Invalid JSON"}
+        responseCode = 400
+
+    return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+
+#list all users.
+@meta_api.route("/users")
+def all_users():
+    data = {}
+    error = {}
+    responseCode = 200
+
+    users_list = []
+
+    users = auth_models.User.query.all()
+    for user in users:
+        users_list.append({"user_id": user.id, "username": user.username})
+
+    data = {"users": users_list}
+
     return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}

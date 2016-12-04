@@ -1,5 +1,6 @@
 #Helpers specific to the auth endpoint, such as generate an oAuth token, and validate a refresh token.
 import random
+import hashlib, binascii
 from ultraSuperbAPI.models import auth_models
 
 def tokenGenerator(length):
@@ -27,3 +28,10 @@ def validateClientID(client_id):
         return True
     else:
         return False
+
+def hashPassword(password_clear):
+    password_hash_bytes = hashlib.pbkdf2_hmac('sha512', password_clear.encode(), b'This is a salt', 100000)
+
+    #Convert output to a string.
+    password_hash_hex = binascii.hexlify(password_hash_bytes)
+    return password_hash_hex.decode('utf-8')

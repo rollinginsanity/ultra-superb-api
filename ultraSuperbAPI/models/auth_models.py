@@ -27,6 +27,6 @@ class oAuthRefreshToken(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(128), index=True, unique=True)
     creation_date = db.Column(db.DateTime(timezone=True), server_default=func.now())
