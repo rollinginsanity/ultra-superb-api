@@ -8,7 +8,11 @@ from ultraSuperbAPI.api import db
 
 from ultraSuperbAPI.models import auth_models
 
+from ultraSuperbAPI.authAPI import helpers as auth_helpers
+
 auth_api = Blueprint('auth', __name__, template_folder='templates')
+
+
 
 @auth_api.route('/')
 def index():
@@ -47,4 +51,36 @@ def oauthAuth():
     some endpoints may in the future take a token generated just off an API key, so maybe that will be an option as well.
     """
 
-    return "lol"
+    data = {}
+    error = {}
+    responseCode = "200"
+    requestJSON = ""
+
+    if request.method == "GET":
+        username = request.args.get("username")
+        password = request.args.get("password")
+        client_id = request.args.get("client_id")
+
+        data = {
+            "username": username,
+            "client_id": client_id,
+            "access_token": auth_helpers.tokenGenerator(32),
+            "refresh_token": auth_helpers.tokenGenerator(64)
+        }
+
+    elif request.method == "POST":
+        requestJSON = request.json
+        username = requestJSON["username"]
+        password = requestJSON["password"]
+        client_id = requestJSON["client_id"]
+
+        data = {
+            "username": username,
+            "client_id": client_id,
+            "access_token": auth_helpers.tokenGenerator(32),
+            "refresh_token": auth_helpers.tokenGenerator(64)
+        }
+    else:
+        return "EFF YOU!"
+
+    return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
