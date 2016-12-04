@@ -33,6 +33,11 @@ def index():
             'URL': url_for('crappybank.index'),
             "methods": ["GET"],
             "description": "This endpoint, lists available endpoints and methods."
+        },
+        {
+            'URL': url_for('crappybank.auth_check'),
+            "methods": ["GET"],
+            "description": "Validates the user's session token, shows the user's own name."
         }
     ]
 
