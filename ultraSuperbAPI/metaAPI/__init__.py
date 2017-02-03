@@ -5,7 +5,7 @@ import hashlib, binascii
 import time
 from ultraSuperbAPI.helpers import buildResponseDictionary, validJSON
 from ultraSuperbAPI.api import db
-from ultraSuperbAPI.models import auth_models
+from ultraSuperbAPI.models import auth_models, customer_models
 from ultraSuperbAPI.authAPI import helpers as auth_helpers
 
 meta_api = Blueprint('meta', __name__, template_folder='templates')
@@ -176,6 +176,13 @@ def create_user():
                 db.session.commit()
 
                 user = auth_models.User.query.filter_by(username=username).first()
+
+                #Create a customer record.
+                customer = customer_models.Customer(user_id=user.id)
+
+                db.session.add(customer)
+
+                db.session.commit()
 
                 data = {
                     "username": user.username,

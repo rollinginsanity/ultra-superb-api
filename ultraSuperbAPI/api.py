@@ -3,15 +3,19 @@ from flask import Flask
 #SQLAlchemy, the ORM of champions.
 from flask_sqlalchemy import SQLAlchemy
 
-
-
 from ultraSuperbAPI import models
+
+from ultraSuperbAPI.helper_classes.json_encoder import AlchemyEncoder
+
+
 
 #Our Flask Object is called 'api', remember that.
 api = Flask(__name__)
 
 #load the config for the api DB.
 api.config.from_object('ultraSuperbAPI.config')
+
+api.json_encoder = AlchemyEncoder
 
 #Yay, the Database!
 db = SQLAlchemy(api)
