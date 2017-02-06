@@ -1,6 +1,6 @@
 import json
 
-def buildResponseDictionary(data="",error=""):
+def buildResponseDictionary(data={},error={}):
     constructed_dict = {
         "data": data,
         "error": error

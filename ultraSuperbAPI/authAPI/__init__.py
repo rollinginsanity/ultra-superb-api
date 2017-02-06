@@ -88,6 +88,18 @@ def oauthAuth():
         responseCode = "500"
     else:
 
+        #If a user already has tokens, delete them.
+        if  auth_models.oAuthAccessToken.query.filter_by(user_id = auth_state["user_id"]).one_or_none():
+            access_token = auth_models.oAuthAccessToken.query.filter_by(user_id = auth_state["user_id"]).first()
+            db.session.delete(access_token)
+            db.session.commit()
+
+        #If a user already has tokens, delete them.
+        if auth_models.oAuthRefreshToken.query.filter_by(user_id = auth_state["user_id"]).one_or_none():
+            refresh_token = auth_models.oAuthRefreshToken.query.filter_by(user_id = auth_state["user_id"]).first()
+            db.session.delete(refresh_token)
+            db.session.commit()
+
         access_token = auth_models.oAuthAccessToken(token_value=auth_helpers.tokenGenerator(32), user_id=auth_state["user_id"])
         refresh_token = auth_models.oAuthRefreshToken(token_value=auth_helpers.tokenGenerator(64), user_id=auth_state["user_id"])
         db.session.add(access_token)

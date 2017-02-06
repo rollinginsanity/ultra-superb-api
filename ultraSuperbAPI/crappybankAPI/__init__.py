@@ -14,17 +14,19 @@ crappybank_api = Blueprint('crappybank', __name__, template_folder='templates')
 
 @crappybank_api.before_request
 def authenticate():
-    auth_state = auth_helpers.validateAccessToken(request.headers.get('Authorization'))
-    print(request.headers.get('Authorization'))
-    print(auth_state)
+    if 'Authorization' in request.headers:
+        auth_state = auth_helpers.validateAccessToken(request.headers.get('Authorization'))
+    else:
+        return buildResponseDictionary(error={"error": "Unauthenticated"}), 403, {'Content-Type': 'application/json; charset=utf-8'}
+
+
     if auth_state["valid"]:
         g.user_state = {
             "user_id": auth_state["user_id"]
         }
     else:
-        g.user_state = {
-            "unauthenticated": True
-        }
+        #Need this, as @jsonapi doesn't work here... it breaks.
+        return buildResponseDictionary(error={"error": "Unauthenticated, please use token: header with the API key."}), 403, {'Content-Type': 'application/json; charset=utf-8'}
 
 
 @crappybank_api.route('/')

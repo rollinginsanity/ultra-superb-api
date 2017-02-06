@@ -7,8 +7,24 @@ from ultraSuperbAPI.helpers import buildResponseDictionary, validJSON
 from ultraSuperbAPI.api import db
 from ultraSuperbAPI.models import auth_models, customer_models
 from ultraSuperbAPI.authAPI import helpers as auth_helpers
+from flask_jsontools import jsonapi
 
 meta_api = Blueprint('meta', __name__, template_folder='templates')
+
+@meta_api.before_request
+def authenticate():
+
+    data = {}
+
+    if 'admin-register' not in request.path:
+        if 'token' in request.headers:
+            pass
+        else:
+            #return "Meh"
+            return buildResponseDictionary(data, {"error": "Unauthenticated, please use token: header with the API key."}), 403, {'Content-Type': 'application/json; charset=utf-8'}
+
+    return
+
 
 @meta_api.route('/')
 def index():
