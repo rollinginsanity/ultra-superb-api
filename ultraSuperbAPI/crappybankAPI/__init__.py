@@ -166,3 +166,20 @@ def generate_customer_urls(cust_id):
     urls["update_url"] = url_for("crappybank.customer_view", cust_id=cust_id)
 
     return {"data": urls, "error": ""}
+
+@crappybank_api.route("/customer/<int:cust_id>/accounts")
+@jsonapi
+def get_accounts(cust_id):
+    error = {}
+    data = {}
+
+    customer = customer_models.Customer.query.filter_by(id=cust_id).first()
+
+    accounts = []
+
+    for account in customer.accounts:
+        accounts.append(account.as_dict())
+
+    data = {"accounts": accounts}
+
+    return {"data": data, "error": error}
