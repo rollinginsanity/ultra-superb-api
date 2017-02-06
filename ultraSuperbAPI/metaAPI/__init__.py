@@ -233,3 +233,50 @@ def all_users():
     data = {"users": users_list}
 
     return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+
+@meta_api.route("/user/account", methods=["POST","GET"])
+@jsonapi
+def accounts():
+    data = {}
+    error = {}
+    if request.method == "GET":
+        return {"Todo": "Implement This Functionality"}, 200, {'Content-Type': 'application/json; charset=utf-8'}
+    elif request.method == "POST":
+        if validJSON(request.data.decode('UTF-8')):
+            requestJSON = request.json
+            account_name = requestJSON["account_name"]
+            account_owner = requestJSON["owner"]
+            balance = requestJSON["balance"]
+
+            customer = customer_models.Customer.query.filter_by(id=account_owner).first()
+
+            account = customer_models.Account(owner=customer, account_name=account_name, balance=float(balance))
+
+            account_id = account.id
+
+            db.session.add(account)
+            db.session.commit()
+
+            account = customer_models.Account.query.filter_by(id=account.id).first()
+
+            data = account.as_dict()
+
+        else:
+            error = {"error": "invalid JSON. :("}
+            return {data, error}, 500, {'Content-Type': 'application/json; charset=utf-8'}
+
+    return {"data": data, "error": error}
+
+@meta_api.route("/users/all")
+@jsonapi
+def list_all():
+    data = {"customers": []}
+    error = {}
+    customers = customer_models.Customer.query.all()
+    for customer in customers:
+        accounts = []
+        for account in customer.accounts:
+            accounts.append(account.as_dict())
+        data["customers"].append({"customer_id": customer.id, "user_id": customer.user_id, "accounts": accounts})
+
+    return data, 200, {'Content-Type': 'application/json; charset=utf-8'}
