@@ -70,7 +70,9 @@ Cache-Control: no-cache
 
 #### Required Headers:
 
-N/A
+```
+token: api_key
+```
 
 #### Request body
 
@@ -120,7 +122,10 @@ Postman-Token: bc816d1d-0452-6541-491e-babf8c2f4992
 
 #### Required Headers:
 
-N/A
+```
+token: api_key
+```
+
 
 #### Request body
 
