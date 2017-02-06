@@ -128,6 +128,65 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Crappybank Authentication Check (Should Fail)",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/auth-check",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Crappybank View Customer",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/customer/1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Crappybank Update Customer",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/customer/1",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"city\": \"Sydney\",\n  \"country\": \"Australia\",\n  \"email\": \"test@test.com\",\n  \"postcode\": 2000,\n  \"state\": \"NSW\",\n  \"street_address\": \"1 George St\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -158,7 +217,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{  \n    \"name\": \"test1642\"\n}\n"
+							"raw": "{  \n    \"name\": \"test1662\"\n}\n"
 						},
 						"description": ""
 					},
@@ -174,25 +233,10 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{  \n    \"name\": \"test\"\n}\n"
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Meta API List copy",
-					"request": {
-						"url": "localhost:5000/meta/v1/",
-						"method": "GET",
-						"header": [
+							},
 							{
-								"key": "Content-Type",
-								"value": "application/json",
+								"key": "token",
+								"value": "{{api_key}}",
 								"description": ""
 							}
 						],
@@ -209,7 +253,13 @@
 					"request": {
 						"url": "localhost:5000/meta/v1/user/1",
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "token",
+								"value": "{{api_key}}",
+								"description": ""
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": []
@@ -223,7 +273,13 @@
 					"request": {
 						"url": "localhost:5000/meta/v1/user/0",
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "token",
+								"value": "{{api_key}}",
+								"description": ""
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": []
@@ -242,6 +298,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"description": ""
+							},
+							{
+								"key": "token",
+								"value": "{{api_key}}",
+								"description": ""
 							}
 						],
 						"body": {
@@ -257,7 +318,13 @@
 					"request": {
 						"url": "localhost:5000/meta/v1/users",
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "token",
+								"value": "{{api_key}}",
+								"description": ""
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": []
