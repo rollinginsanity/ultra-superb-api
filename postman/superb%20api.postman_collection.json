@@ -145,6 +145,15 @@
 				},
 				{
 					"name": "Crappybank View Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": "var jsonData = JSON.parse(responseBody);\n\npostman.setEnvironmentVariable(\"customer_id\", jsonData.data[\"id\"]);\n\n\ntests[\"Status code is 200\"] = responseCode.code === 200;"
+							}
+						}
+					],
 					"request": {
 						"url": "localhost:5000/crappybank/v1/customer/1",
 						"method": "GET",
@@ -183,6 +192,26 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"city\": \"Sydney\",\n  \"country\": \"Australia\",\n  \"email\": \"test@test.com\",\n  \"postcode\": 2000,\n  \"state\": \"NSW\",\n  \"street_address\": \"1 George St\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Crappybank Customer Accounts",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/customer/{{customer_id}}/accounts",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
 						},
 						"description": ""
 					},
@@ -328,6 +357,56 @@
 						"body": {
 							"mode": "formdata",
 							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new account",
+					"request": {
+						"url": "localhost:5000/meta/v1/user/account",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "token",
+								"value": "{{api_key}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"owner\": 1,\n    \"account_name\": \"Test\",\n    \"balance\": 1000\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "List all customers and accounts",
+					"request": {
+						"url": "localhost:5000/meta/v1/users/all",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "token",
+								"value": "{{api_key}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"owner\": 1,\n    \"account_name\": \"Test\",\n    \"balance\": 1000\n}"
 						},
 						"description": ""
 					},
