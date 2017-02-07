@@ -29,6 +29,7 @@ class Account(db.Model):
     account_name = db.Column(db.String(128), index=True)
     balance = db.Column(db.Float)
     transactions = db.relationship('Transaction', backref="account", cascade="all, delete-orphan" , lazy='dynamic')
+    pending_transactions = db.relationship('PendingTransaction', backref="pt_account", cascade="all, delete-orphan" , lazy='dynamic')
 
     def as_dict(self):
         #Urgh, this totally won't come back to bite me in the arse...
@@ -39,6 +40,18 @@ class Account(db.Model):
         self.balance = self.balance + amount
 
 class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
+    to_account = db.Column(db.Integer)
+    tran_type = db.Column(db.String(128), index=True)
+    amount = db.Column(db.Float)
+
+    def as_dict(self):
+        #Urgh, this totally won't come back to bite me in the arse...
+        #In theory, there's an issue serialising datetime objects... not a problem right now...
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class PendingTransaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
     to_account = db.Column(db.Integer)

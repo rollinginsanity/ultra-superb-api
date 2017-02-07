@@ -164,9 +164,11 @@ def generate_customer_urls(cust_id):
     error = {}
 
     urls["update_url"] = url_for("crappybank.customer_view", cust_id=cust_id)
+    urls["accounts_url"] = url_for("crappybank.get_accounts", cust_id=cust_id)
 
     return {"data": urls, "error": ""}
 
+#Let a customer view accounts they own.
 @crappybank_api.route("/customer/<int:cust_id>/accounts")
 @jsonapi
 def get_accounts(cust_id):
@@ -174,6 +176,9 @@ def get_accounts(cust_id):
     data = {}
 
     customer = customer_models.Customer.query.filter_by(id=cust_id).first()
+
+    if customer == None:
+        return {"data": {}, "error": {"error": "Invalid customer ID."}}
 
     accounts = []
 
@@ -183,3 +188,74 @@ def get_accounts(cust_id):
     data = {"accounts": accounts}
 
     return {"data": data, "error": error}
+
+@crappybank_api.route("/transactions/create", methods=["POST"])
+@jsonapi
+def create_transaction():
+    error = {}
+    data = {}
+    #Var to store the request JSON.
+    requestJSON = ""
+
+    #Check if the request has data.
+    if not request.data:
+        responseCode = 400
+        error = {"desc": "No data sent to server."}
+
+    #Check the request content type is set correctly.
+    if not request.headers['Content-Type'] == 'application/json':
+        responseCode = 400
+        data = {}
+        error = {"desc": "Set content-type to 'application/json'."}
+
+    #Check that the request contains valid JSON.
+    if not validJSON(request.data.decode('UTF-8')):
+        responseCode = 400
+        error = {"desc": "Invalid JSON."}
+    else:
+        requestJSON = request.json
+
+    tran_type = ""
+
+    from_account = requestJSON["from_account"]
+    to_account = requestJSON["to_account"]
+    amount = requestJSON["amount"]
+
+    account = customer_models.Account.query.filter_by(id=from_account).first()
+
+    pending_transaction = customer_models.PendingTransaction(account_id=account.id, to_account=to_account, amount=float(amount), tran_type="debit")
+
+    pending_id = pending_transaction.id
+
+    db.session.add(pending_transaction)
+    db.session.commit()
+    pending_id = pending_transaction.id
+    pending_transaction = customer_models.PendingTransaction.query.filter_by(id=pending_id).first()
+
+    return {"data": pending_transaction.as_dict(), "error": {}}
+
+@crappybank_api.route("/transactions/pending/<int:acct_id>")
+@jsonapi
+def get_pending_transactions(acct_id):
+
+    account = customer_models.Account.query.filter_by(id=acct_id).first()
+
+    pending_transactions = []
+
+    for pend_tran in account.pending_transactions:
+        pending_transactions.append(pend_tran.as_dict())
+
+    return {"data": pending_transactions, "error": {}}
+
+@crappybank_api.route("/transactions/<int:acct_id>")
+@jsonapi
+def get_transactions(acct_id):
+
+    account = customer_models.Account.query.filter_by(id=acct_id).first()
+
+    transactions = []
+
+    for tran in account.transactions:
+        transactions.append(pend_tran.as_dict())
+
+    return {"data": transactions, "error": {}}
