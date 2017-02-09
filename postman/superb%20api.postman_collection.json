@@ -216,6 +216,91 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Crappybank Create Transaction",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/transactions/create",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_account\": 2,\n    \"to_account\": 3,\n    \"amount\": 1\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Crappybank View Pending Transactions",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/transactions/pending/2",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Crappybank View Transactions",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/transactions/2",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Crappybank Confirm Pending Transaction",
+					"request": {
+						"url": "localhost:5000/crappybank/v1/transactions/confirm/8",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer {{access_token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
