@@ -36,8 +36,15 @@ class Account(db.Model):
         #In theory, there's an issue serialising datetime objects... not a problem right now...
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-    def update_balance(amount):
+    #Reduce Balance
+    def debit(self,amount):
+        self.balance = self.balance - amount
+        return True
+
+    #Increase Balance
+    def credit(self, amount):
         self.balance = self.balance + amount
+        return True
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)

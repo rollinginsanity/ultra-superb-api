@@ -256,6 +256,63 @@ def get_transactions(acct_id):
     transactions = []
 
     for tran in account.transactions:
-        transactions.append(pend_tran.as_dict())
+        transactions.append(tran.as_dict())
 
     return {"data": transactions, "error": {}}
+
+@crappybank_api.route("/transactions/confirm/<int:tran_id>")
+@jsonapi
+def confirm_transaction(tran_id):
+    #Get the transaction from the pending list.
+    pending_transaction = customer_models.PendingTransaction.query.filter_by(id=tran_id).first()
+    if pending_transaction == None:
+        return {"data": {}, "error": {"error": "No pending transaction with that ID found."}}
+    print(pending_transaction.as_dict())
+    #Get information on the source account.
+    from_account = customer_models.Account.query.filter_by(id=pending_transaction.account_id).first()
+    #Set transaction information
+    tran_type = pending_transaction.tran_type
+    amount = pending_transaction.amount
+    to_account = customer_models.Account.query.filter_by(id=pending_transaction.to_account).first()
+
+    if to_account == None:
+
+        #Create new transaction
+        transaction = customer_models.Transaction(tran_type=tran_type, amount=amount, to_account=to_account, account_id=from_account.id)
+
+        db.session.add(transaction)
+        db.session.delete(pending_transaction)
+        db.session.commit()
+
+        from_account.debit(transaction.amount)
+
+        db.session.add(from_account)
+
+        db.session.commit()
+
+        data = {}
+        error = {}
+        data['transaction'] = transaction.as_dict()
+        data['status'] = "success"
+    else:
+        #Create new transaction
+        transaction = customer_models.Transaction(tran_type=tran_type, amount=amount, to_account=to_account.id, account_id=from_account.id)
+
+        db.session.add(transaction)
+        db.session.delete(pending_transaction)
+        db.session.commit()
+
+        from_account.debit(transaction.amount)
+        to_account.credit(transaction.amount)
+
+        db.session.add(from_account)
+        db.session.add(to_account)
+
+        db.session.commit()
+
+        data = {}
+        error = {}
+        data['transaction'] = transaction.as_dict()
+        data['status'] = "success"
+
+    return {"data": data, "error": error}
