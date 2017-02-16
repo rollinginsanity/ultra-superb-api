@@ -1,10 +1,10 @@
-click==6.6
+click==6.7
 decorator==4.0.10
-Flask==0.11.1
+Flask==0.12
 flask-jsontools==0.1.1.post0
 Flask-SQLAlchemy==2.1
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2==2.9.5
 MarkupSafe==0.23
 pbr==1.10.0
 six==1.10.0
@@ -12,4 +12,4 @@ SQLAlchemy==1.1.4
 sqlalchemy-migrate==0.10.0
 sqlparse==0.2.2
 Tempita==0.5.2
-Werkzeug==0.11.11
+Werkzeug==0.11.15
