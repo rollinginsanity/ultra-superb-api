@@ -68,35 +68,29 @@ def auth_check():
 
     user = auth_models.User.query.filter_by(id=g.user_state["user_id"]).first()
 
-    data = {
+    response_body = {
         "username": user.username
     }
 
-    return {"data": data,"error": error}, responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+    return response_body, responseCode, {'Content-Type': 'application/json; charset=utf-8'}
 
-@crappybank_api.route("/customer/<int:cust_id>", methods=["GET","POST"])
+@crappybank_api.route("/customer/<cust_num>", methods=["GET","POST"])
 @jsonapi
-def customer_view(cust_id):
+def customer_view(cust_num):
     """
     View customer data.
     """
 
     #Set these two to default to blank, so that they are always returned.
-    data = {}
-    error = {}
-
-
     #Look ma, no access control!
 
     if request.method == "GET":
 
-        customer = customer_models.Customer.query.filter_by(user_id=cust_id).first()
+        customer = customer_models.Customer.query.filter_by(customer_number=cust_num).first()
 
-        return {"data": customer.as_dict(),"error": error}
+        return customer.as_dict(), 200
 
     elif request.method == "POST":
-
-
 
         #Var to store the request JSON.
         requestJSON = ""
@@ -104,23 +98,22 @@ def customer_view(cust_id):
         #Check if the request has data.
         if not request.data:
             responseCode = 400
-            error = {"desc": "No data sent to server."}
+            respose_body = {"error": "No data sent to server."}
 
         #Check the request content type is set correctly.
         if not request.headers['Content-Type'] == 'application/json':
             responseCode = 400
-            data = {}
-            error = {"desc": "Set content-type to 'application/json'."}
+            respose_body = {"error": "Set content-type to 'application/json'."}
 
         #Check that the request contains valid JSON.
         if not validJSON(request.data.decode('UTF-8')):
             responseCode = 400
-            error = {"desc": "Invalid JSON."}
+            respose_body = {"error": "Invalid JSON."}
         else:
             requestJSON = request.json
 
             #Assign values
-            customer = customer_models.Customer.query.filter_by(user_id=cust_id).first()
+            customer = customer_models.Customer.query.filter_by(customer_number=cust_num).first()
 
             if "city" in requestJSON:
                 customer.city = requestJSON["city"]
@@ -143,18 +136,18 @@ def customer_view(cust_id):
             db.session.add(customer)
             db.session.commit()
 
-            customer = customer_models.Customer.query.filter_by(user_id=cust_id).first()
+            customer = customer_models.Customer.query.filter_by(customer_number=cust_num).first()
 
-            data = customer.as_dict()
+            response_body = customer.as_dict()
 
             responseCode = 200
 
 
-        return {"data": data,"error": error}, responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+        return response_body, responseCode
 
-@crappybank_api.route("/customer/<int:cust_id>/urls")
+@crappybank_api.route("/customer/<cust_num>/urls")
 @jsonapi
-def generate_customer_urls(cust_id):
+def generate_customer_urls(cust_num):
     """
     Generate URLs which can be used in the UI (a shortcut, if you will.)
     """
@@ -163,31 +156,30 @@ def generate_customer_urls(cust_id):
 
     error = {}
 
-    urls["update_url"] = url_for("crappybank.customer_view", cust_id=cust_id)
-    urls["accounts_url"] = url_for("crappybank.get_accounts", cust_id=cust_id)
+    urls["update_url"] = url_for("crappybank.customer_view", cust_id=cust_num)
+    urls["accounts_url"] = url_for("crappybank.get_accounts", cust_id=cust_num)
 
-    return {"data": urls, "error": ""}
+    return urls
 
 #Let a customer view accounts they own.
-@crappybank_api.route("/customer/<int:cust_id>/accounts")
+@crappybank_api.route("/customer/<cust_num>/accounts")
 @jsonapi
-def get_accounts(cust_id):
-    error = {}
-    data = {}
+def get_accounts(cust_num):
 
-    customer = customer_models.Customer.query.filter_by(id=cust_id).first()
+    customer = customer_models.Customer.query.filter_by(customer_number=cust_num).first()
 
     if customer == None:
-        return {"data": {}, "error": {"error": "Invalid customer ID."}}
+        #Whoops, should this really be possible?
+        return {"error": "Invalid customer Number."}, 400
 
     accounts = []
 
     for account in customer.accounts:
         accounts.append(account.as_dict())
 
-    data = {"accounts": accounts}
+    response_body = {"accounts": accounts}
 
-    return {"data": data, "error": error}
+    return response_body, 200
 
 @crappybank_api.route("/transactions/create", methods=["POST"])
 @jsonapi
