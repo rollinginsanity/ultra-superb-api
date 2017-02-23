@@ -151,6 +151,14 @@ def accounts():
 
             account = customer_models.Account.query.filter_by(id=account.id).first()
 
+            acct_id = str(account.id)
+
+            account.account_number = "ACCT"+"-"+"TRAN"+acct_id.zfill(9)
+
+            db.session.add(account)
+
+            db.session.commit()
+
             data = account.as_dict()
 
         else:

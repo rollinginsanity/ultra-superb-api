@@ -26,6 +26,7 @@ class Customer(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    account_number = db.Column(db.String(20), index=True, unique=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
     account_name = db.Column(db.String(128), index=True)
     balance = db.Column(db.Float)
