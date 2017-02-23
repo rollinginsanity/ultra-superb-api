@@ -1,6 +1,7 @@
 #Helpers specific to the auth endpoint, such as generate an oAuth token, and validate a refresh token.
 import random
 import hashlib, binascii
+
 from ultraSuperbAPI.models import auth_models
 
 
@@ -26,10 +27,9 @@ def validateCredentials(username, password, client_id):
 
 #Validate if a client ID is real.
 def validateClientID(client_id):
-    check_key = auth_models.APIKey.query.filter_by(key_value=client_id).first()
-
-    if check_key:
-        print("User authenticating with client_id: "+check_key.key_value)
+    #This is just here to keep the idea of maintaining a client_id from a client context. Could also set this up to create client IDs, but I won't, for now.
+    if client_id == "myclient":
+        print("User authenticating with client_id: "+client_id)
         return True
     else:
         return False

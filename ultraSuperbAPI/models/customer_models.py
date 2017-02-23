@@ -6,6 +6,7 @@ from sqlalchemy.sql import func
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    customer_number = db.Column(db.String(20), index=True, unique=True)
     user_id = db.Column(db.Integer, index=True, unique=True)
     email = db.Column(db.String(128), index=True)
     street_address = db.Column(db.String(128), index=True)
