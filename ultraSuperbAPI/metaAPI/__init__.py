@@ -52,9 +52,8 @@ def users(userid):
 
 #Create a new user for the other APIs.
 @meta_api.route("/user/create", methods=["POST"])
+@jsonapi
 def create_user():
-    data = {}
-    error = {}
     responseCode = 200
 
     if validJSON(request.data.decode('UTF-8')):
@@ -92,23 +91,23 @@ def create_user():
 
                 db.session.commit()
 
-                data = {
+                response_body = {
                     "username": user.username,
                     "user_id": user.id,
                     "customer_number": customer.customer_number
                 }
             else:
-                error = {"description": "Duplicate username detected."}
+                response_body = {"error": "Duplicate username detected."}
                 responseCode = 400
         else:
-            error = {"description": "Missing username or password in JSON body."}
+            response_body = {"error": "Missing username or password in JSON body."}
             responseCode = 400
 
     else:
-        error = {"description": "Invalid JSON"}
+        response_body = {"error": "Invalid JSON"}
         responseCode = 400
 
-    return buildResponseDictionary(data, error), responseCode, {'Content-Type': 'application/json; charset=utf-8'}
+    return response_body, responseCode
 
 #list all users.
 @meta_api.route("/users")
