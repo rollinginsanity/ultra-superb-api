@@ -1,7 +1,7 @@
 #Helpers specific to the auth endpoint, such as generate an oAuth token, and validate a refresh token.
 import random
 import hashlib, binascii
-
+import datetime
 from ultraSuperbAPI.models import auth_models
 
 
@@ -56,6 +56,10 @@ def validateAccessToken(access_token):
     token = access_token.split(" ")[1]
     token_check = auth_models.oAuthAccessToken.query.filter_by(token_value=token).first()
     if token_check:
+        #Have to account for the fact that the DB stores created dates as GMT 0. I've added a GMT Drift here. Should pull this from a config file.
+        gmt_tz = 11
+        if token_check.creation_date+datetime.timedelta(hours=gmt_tz) < datetime.datetime.now()-datetime.timedelta(minutes=20):
+            return {"valid": False, "reason": "expired token"}
         return {"valid": True, "user_id": token_check.user_id}
     else:
         return {"valid": False}
