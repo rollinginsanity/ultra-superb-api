@@ -7,7 +7,7 @@ from ultraSuperbAPI.authAPI import helpers as auth_helpers
 from ultraSuperbAPI.helpers import buildResponseDictionary, validJSON
 from ultraSuperbAPI.models import auth_models, customer_models
 from flask.ext.jsontools import jsonapi
-
+from ultraSuperbAPI.loggy import crappyLog
 
 
 crappybank_api = Blueprint('crappybank', __name__, template_folder='templates')
@@ -17,7 +17,7 @@ def authenticate():
     if 'Authorization' in request.headers:
         auth_state = auth_helpers.validateAccessToken(request.headers.get('Authorization'))
     else:
-        return buildResponseDictionary(error={"error": "Unauthenticated"}), 403, {'Content-Type': 'application/json; charset=utf-8'}
+        return json.dumps({"error": "Unauthenticated"}), 403, {'Content-Type': 'application/json; charset=utf-8'}
 
 
     if auth_state["valid"]:
@@ -26,7 +26,8 @@ def authenticate():
         }
     else:
         #Need this, as @jsonapi doesn't work here... it breaks.
-        return buildResponseDictionary(error={"error": "Unauthenticated, please use token: header with the API key."}), 403, {'Content-Type': 'application/json; charset=utf-8'}
+
+        return json.dumps({"error": "Unauthenticated, please use bearer header header with the API key."}), 403, {'Content-Type': 'application/json; charset=utf-8'}
 
 
 @crappybank_api.route('/')
@@ -71,7 +72,7 @@ def auth_check():
     response_body = {
         "username": user.username
     }
-
+    crappyLog.logger.info('User '+user.username+' used '+url_for('crappybank.auth_check'))
     return response_body, responseCode, {'Content-Type': 'application/json; charset=utf-8'}
 
 @crappybank_api.route("/customer/<cust_num>", methods=["GET","POST"])

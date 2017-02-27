@@ -1,35 +1,24 @@
-from flask import Blueprint, render_template, abort, url_for
+from flask import Blueprint, render_template, abort, url_for, request
 from jinja2 import TemplateNotFound
 import json
+from ultraSuperbAPI.loggy import crappyLog
+from flask.ext.jsontools import jsonapi
 
 admin_api = Blueprint('admin', __name__, template_folder='templates')
 
-@admin_api.route('/')
-def index():
 
-    URLS = [
-        {
-            'URL': url_for('admin.index'),
-            "methods": ["GET"],
-            "description": "This endpoint, lists available endpoints and methods."
-        },
-        {
-            'URL': url_for('admin.authenticate'),
-            "methods": ["POST"],
-            "description": "Lets an admin application or user authenticate."
-        }
-    ]
+@admin_api.route('/logs', methods=["POST"])
+@jsonapi
+def logsey():
+    #What the? Look at this. It takes user input for the logfile display back to the user. Whyyy?
+    requestJSON = request.json
+    #What? So adding .log to the command should stop injection? Nope, use one of #theseones '#' to escape.
+    last_20_logs = crappyLog.view_logs(requestJSON["logfile"]+".log").splitlines()
 
-    endpoints = {
-        'name': 'Admin APIs',
-        'description': 'Administration APIs. Create banking users, check activity, all that fun stuff.',
-        'URLS': URLS
-    }
+    logs = []
 
-    endpoints_json = json.dumps(endpoints)
+    for log in last_20_logs:
+        logs.append(log)
 
-    return endpoints_json, 200, {'Content-Type': 'application/json; charset=utf-8'}
 
-@admin_api.route('/authenticate')
-def authenticate():
-    return '{"huh": "?"}', 200, {'Content-Type': 'application/json; charset=utf-8'}
+    return {"logs": logs}, 200, {'Content-Type': 'application/json; charset=utf-8'}

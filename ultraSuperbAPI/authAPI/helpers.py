@@ -3,6 +3,8 @@ import random
 import hashlib, binascii
 import datetime
 from ultraSuperbAPI.models import auth_models
+from ultraSuperbAPI.loggy import crappyLog
+from ultraSuperbAPI.api import db
 
 
 def tokenGenerator(length):
@@ -11,7 +13,7 @@ def tokenGenerator(length):
     #chars = "abcdABCD1234"  #Like this?
     #Yay, we have a token, probably generated pretty badly. But that's the point!
     token = ''.join([chars[random.randint(0,len(chars)-1)] for i in range(0,length)])
-
+    crappyLog.logger.info('Generated token: '+token)
     return token
 
 def validateCredentials(username, password, client_id):
@@ -19,17 +21,20 @@ def validateCredentials(username, password, client_id):
         auth_attempt = validatePassword(username, password)
         print(auth_attempt)
         if auth_attempt["valid"]:
+            crappyLog.logger.info('logged in user: '+str(auth_attempt["user_id"]))
             return {"authenticated": True, "user_id": auth_attempt["user_id"]}
         else:
+            crappyLog.logger.warn('Failed to log in user: '+username)
             return {"authenticated": False, "error": auth_attempt["reason"]} #See below why this is baaaaad.
     else:
+        crappyLog.logger.warn('Failed login attempt, missing client ID.')
         return {"authenticated": False, "error": "missing or invalid client ID."} #Hint, this is bad, because it will help enumeration.
 
 #Validate if a client ID is real.
 def validateClientID(client_id):
     #This is just here to keep the idea of maintaining a client_id from a client context. Could also set this up to create client IDs, but I won't, for now.
     if client_id == "myclient":
-        print("User authenticating with client_id: "+client_id)
+        crappyLog.logger.info("User authenticating with client_id: "+client_id)
         return True
     else:
         return False
@@ -37,12 +42,15 @@ def validateClientID(client_id):
 #Validate the user's password (and implicitly, the user at the same time.)
 def validatePassword(username, password_clear):
     user = auth_models.User.query.filter_by(username=username).first()
+    crappyLog.logger.info('Attempting to validate password for user '+username+' with password '+password_clear)
     if user:
         if user.password == hashPassword(password_clear):     #Bad, should hash before getting user info, only hasing on valid values leads to enumeration.
             return {"valid": True, "user_id": user.id}
         else:
+            crappyLog.logger.warn('Bad password for user '+user.username)
             return {"valid": False, "reason": "Incorrect password for user."} #Nononononono, never do this.
     else:
+        crappyLog.logger.warn('User does not exist: '+username)
         return {"valid": False, "reason": "User does not exist."} #Also bad.
 
 def hashPassword(password_clear):
@@ -52,6 +60,7 @@ def hashPassword(password_clear):
     password_hash_hex = binascii.hexlify(password_hash_bytes)
     return password_hash_hex.decode('utf-8')
 
+#Checks if access token is valid, hasn't expired, and deletes it if it has.
 def validateAccessToken(access_token):
     token = access_token.split(" ")[1]
     token_check = auth_models.oAuthAccessToken.query.filter_by(token_value=token).first()
@@ -59,6 +68,8 @@ def validateAccessToken(access_token):
         #Have to account for the fact that the DB stores created dates as GMT 0. I've added a GMT Drift here. Should pull this from a config file.
         gmt_tz = 11
         if token_check.creation_date+datetime.timedelta(hours=gmt_tz) < datetime.datetime.now()-datetime.timedelta(minutes=20):
+            db.session.delete(token_check)
+            db.session.commit()
             return {"valid": False, "reason": "expired token"}
         return {"valid": True, "user_id": token_check.user_id}
     else:

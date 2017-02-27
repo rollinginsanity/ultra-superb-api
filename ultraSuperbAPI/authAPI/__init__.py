@@ -56,7 +56,7 @@ def oauthAuth():
     responseCode = "200"
     requestJSON = ""
 
-    #Get data from GET query params.
+    #Get data from GET query params. This is bad, sensitive data in query params is dangerous, they may get logged.
     if request.method == "GET":
         username = request.args.get("username")
         password = request.args.get("password")
@@ -66,7 +66,7 @@ def oauthAuth():
             response_body = {"error": "Missing parameter, make sure username, password and client_id are all set.", "code": "1"}
             responseCode = 403
 
-    #Get data from POST body.
+    #Get data from POST body. This is safer. Less safe, but better than query params is basic auth in the header. Sometimes though, headers get logged.
     elif request.method == "POST":
         requestJSON = request.json
         ##If any data is missing error out.
