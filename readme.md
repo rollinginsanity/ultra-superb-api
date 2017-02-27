@@ -28,6 +28,8 @@ Run `python create_db.py` if you haven't already (builds the DB). If I make chan
 
 Run `python start.py` to kick things off.
 
+Run `python start.py -e DEV|PROD` to run the server in a specific mode.
+
 In the `/postman` is a postman collection with the bits of the API I've build implemented. This will always be up-to-date with what works, as it's how I check stuff is implemented. Specifically run the create user and the api key requests to get started. Also you'll need to create an environment in Postman.
 
 OWASP Top 10 Implementation Status
