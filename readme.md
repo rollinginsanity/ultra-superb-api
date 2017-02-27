@@ -22,7 +22,7 @@ Requirements
 To run
 ======
 
-Set up a virtual environment inside the folder created by a `git clone`.
+Set up a virtual environment inside the folder created by a `git clone`. The rest of the steps assume you're either using a Virtual Environment or somehow magically kept your System Packages intact while installing the dependencies for this project.
 
 Run `python create_db.py` if you haven't already (builds the DB). If I make changes to the DB, run `python db_migrate` and `python db_upgrade` to upgrade. If you move back to an earlier commit, use `db_downgrade.py` to roll back to the version that matches the commit you are using.
 
@@ -30,4 +30,20 @@ Run `python start.py` to kick things off.
 
 In the `/postman` is a postman collection with the bits of the API I've build implemented. This will always be up-to-date with what works, as it's how I check stuff is implemented. Specifically run the create user and the api key requests to get started. Also you'll need to create an environment in Postman.
 
-Enjoy!
+OWASP Top 10 Implementation Status
+==================================
+
+I can't promise I'll get everything from this list working. Things like SQL injection might not be easily possible as I'm using an ORM, but leave it with me and let's see how creatively bad I can be.
+
+| OWAP Top 10 Item (2013) | Status |
+| --- | --- |
+| A1 - Injection | There's some examples of this, specifically command injection, no SQL injection yet. |
+| A2 - Broken Authentication and Session Management | Partial, poor randomness in tokens, broken sessions in the works. |
+| A3 - Cross Site Scripting | Literally everywhere. |
+| A4 - Insecure Direct Object Reference | Partial, can directly reference other user objects. |
+| A5 - Security Misconfiguration | Not sure if I'll worry about this one. |
+| A6 - Sensitive Data Exposure | Literaly everywhere, from logs to being able to access the data of other users. |
+| A7 - Missing Function Level Access Control | As this is an API I'm implicitly forcing authentication for all users, but I might cook up something with this one. |
+| A8 - Cross Site Request Forgery | Shoulda already be possible, just need to come up with an example. |
+| A9 - Using Components With Known Vulnerabilities | Same as A5, I might not worry about this one explicitly. |
+| A10 - Unvalidated Redirects and Forwards | As this is an API I might have to make a heavy handed example... |
