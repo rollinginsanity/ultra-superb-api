@@ -14,11 +14,11 @@ def logsey():
     requestJSON = request.json
     #What? So adding .log to the command should stop injection? Nope, use one of #theseones '#' to escape.
     last_20_logs = crappyLog.view_logs(requestJSON["logfile"]+".log").splitlines()
-
+    #Outputting what we think is a nice list of recent logs.
     logs = []
 
     for log in last_20_logs:
-        logs.append(log)
+        logs.append({"log": log})
 
 
     return {"logs": logs}, 200, {'Content-Type': 'application/json; charset=utf-8'}

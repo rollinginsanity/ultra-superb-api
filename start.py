@@ -16,7 +16,6 @@ elif args.environment == "PROD":
 else:
     env = "PROD"
 
-
 #More quality code here.
 ####Some Config to externalise.
 

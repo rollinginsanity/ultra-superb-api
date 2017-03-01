@@ -1,7 +1,7 @@
 #db migrations, they contain sensitive data.
 
 ultraSuperbAPI/db_migrations
-
+docker/
 logs/
 
 # Byte-compiled / optimized / DLL files
