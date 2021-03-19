@@ -4,7 +4,7 @@ Flask==0.12
 flask-jsontools==0.1.1.post0
 Flask-SQLAlchemy==2.1
 itsdangerous==0.24
-Jinja2==2.9.5
+Jinja2==2.11.3
 MarkupSafe==0.23
 pbr==1.10.0
 six==1.10.0
